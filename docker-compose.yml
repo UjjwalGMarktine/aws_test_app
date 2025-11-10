@@ -24,19 +24,50 @@
 #     restart: always
 
 
-version: "3.9"
+# version: "3.9"
+
+# services:
+#   fastapi_app:
+#     build: .
+#     container_name: fastapi_app_container
+#     networks:
+#       - fastapi_network
+#     expose:
+#       - "8000"
+#     environment:
+#       - PYTHONUNBUFFERED=1
+#     restart: always
+
+#   nginx:
+#     image: nginx:latest
+#     container_name: nginx_container
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+#     depends_on:
+#       - fastapi_app
+#     networks:
+#       - fastapi_network
+
+# networks:
+#   fastapi_network:
+#     driver: bridge
+
+
+
+
+version: '3.8'
 
 services:
   fastapi_app:
-    build: .
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.9
     container_name: fastapi_app_container
-    networks:
-      - fastapi_network
+    volumes:
+      - ./app:/app
     expose:
-      - "8000"
-    environment:
-      - PYTHONUNBUFFERED=1
-    restart: always
+      - 8000
 
   nginx:
     image: nginx:latest
@@ -45,12 +76,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/certs:/etc/ssl/certs
     depends_on:
       - fastapi_app
-    networks:
-      - fastapi_network
-
-networks:
-  fastapi_network:
-    driver: bridge
